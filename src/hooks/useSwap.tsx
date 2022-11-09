@@ -1,0 +1,144 @@
+import {
+  chainId,
+  useAccount,
+  useContract,
+  useProvider,
+  useSigner,
+} from 'wagmi';
+import IUniswapV3PoolArtifact from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json';
+import ISwapRouterArtifact from '@uniswap/v3-periphery/artifacts/contracts/interfaces/ISwapRouter.sol/ISwapRouter.json';
+import { ethers } from 'ethers';
+import useWETH from './useWETH';
+import { Pool } from '@uniswap/v3-sdk';
+import { Token } from '@uniswap/sdk-core';
+
+interface Immutables {
+  token0: string;
+  token1: string;
+  fee: number;
+}
+
+interface State {
+  liquidity: ethers.BigNumber;
+  sqrtPriceX96: ethers.BigNumber;
+  tick: number;
+}
+
+const WETHDecimals = 18;
+const UNIDecimals = 18;
+// WETH - UNI pool with 0.3% fee
+const poolAddress = '0x07A4f63f643fE39261140DF5E613b9469eccEC86';
+
+const routerAddress = '0xE592427A0AEce92De3Edee1F18E0157C05861564';
+
+const useSwap = () => {
+  const provider = useProvider();
+  const { data: signer } = useSigner();
+  const { address } = useAccount();
+  const poolContract = useContract({
+    address: poolAddress,
+    abi: IUniswapV3PoolArtifact.abi,
+    signerOrProvider: provider,
+  });
+  const routerContract = useContract({
+    address: routerAddress,
+    abi: ISwapRouterArtifact.abi,
+    signerOrProvider: signer,
+  });
+  const { approve, deposit } = useWETH();
+
+  const swap = async (amount: number) => {
+    if (!routerContract)
+      throw new Error('Router contract has not been initialized');
+
+    await deposit(amount);
+    await approve(routerAddress, amount);
+
+    const immutables = await getPoolImmutables();
+
+    const parsedAmount = ethers.utils.parseUnits(
+      amount.toString(),
+      UNIDecimals
+    );
+
+    const params = {
+      tokenIn: immutables.token1,
+      tokenOut: immutables.token0,
+      fee: immutables.fee,
+      recipient: address,
+      deadline: Math.floor(Date.now() / 1000) + 60 * 10,
+      amountIn: parsedAmount,
+      amountOutMinimum: 0,
+      sqrtPriceLimitX96: 0,
+    };
+
+    const txn = await routerContract.exactInputSingle(params, {
+      gasLimit: ethers.utils.hexlify(700000),
+    });
+
+    return txn;
+  };
+
+  const getQuote = async (amount: number) => {
+    const [immutables, state] = await Promise.all([
+      getPoolImmutables(),
+      getPoolState(),
+    ]);
+
+    const tokenA = new Token(chainId.goerli, immutables.token0, UNIDecimals);
+    const tokenB = new Token(chainId.goerli, immutables.token1, WETHDecimals);
+
+    const pool = new Pool(
+      tokenA,
+      tokenB,
+      immutables.fee,
+      state.sqrtPriceX96.toString(),
+      state.liquidity.toString(),
+      state.tick
+    );
+
+    const outputAmount = amount * parseFloat(pool.token1Price.toFixed(2));
+
+    return outputAmount;
+  };
+
+  const getPoolImmutables = async () => {
+    if (!poolContract)
+      throw new Error('Pool contract has not been initialized');
+
+    const [token0, token1, fee] = await Promise.all([
+      poolContract.token0(),
+      poolContract.token1(),
+      poolContract.fee(),
+    ]);
+
+    const immutables: Immutables = {
+      token0,
+      token1,
+      fee,
+    };
+    return immutables;
+  };
+
+  const getPoolState = async () => {
+    if (!poolContract)
+      throw new Error('Pool contract has not been initialized');
+
+    const [liquidity, slot] = await Promise.all([
+      poolContract.liquidity(),
+      poolContract.slot0(),
+    ]);
+
+    const PoolState: State = {
+      liquidity,
+      sqrtPriceX96: slot[0],
+      tick: slot[1],
+    };
+
+    return PoolState;
+  };
+
+  return { swap, getQuote };
+};
+
+export default useSwap;

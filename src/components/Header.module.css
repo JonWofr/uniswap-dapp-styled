@@ -1,0 +1,6 @@
+.header {
+  background-color: var(--secondary-background-color);
+  padding: 0.5rem 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
