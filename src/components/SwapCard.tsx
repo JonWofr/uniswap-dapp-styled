@@ -7,6 +7,8 @@ import { useAccount, useBalance } from 'wagmi';
 import Spinner from './Spinner';
 import Button from './Button';
 
+const UNI_ADDRESS = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';
+
 const SwapCard = () => {
   const [amount, setAmount] = React.useState(0);
   const [quote, setQuote] = React.useState(0);
@@ -20,7 +22,7 @@ const SwapCard = () => {
   });
   const { data: UNIBalance } = useBalance({
     addressOrName: address,
-    token: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+    token: UNI_ADDRESS,
     watch: true,
   });
 

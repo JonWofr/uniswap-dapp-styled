@@ -24,24 +24,24 @@ interface State {
   tick: number;
 }
 
-const WETHDecimals = 18;
-const UNIDecimals = 18;
+const WETH_DECIMALS = 18;
+const UNI_DECIMALS = 18;
 // WETH - UNI pool with 0.3% fee
-const poolAddress = '0x07A4f63f643fE39261140DF5E613b9469eccEC86';
+const POOL_ADDRESS = '0x07A4f63f643fE39261140DF5E613b9469eccEC86';
 
-const routerAddress = '0xE592427A0AEce92De3Edee1F18E0157C05861564';
+const ROUTER_ADDRESS = '0xE592427A0AEce92De3Edee1F18E0157C05861564';
 
 const useSwap = () => {
   const provider = useProvider();
   const { data: signer } = useSigner();
   const { address } = useAccount();
   const poolContract = useContract({
-    address: poolAddress,
+    address: POOL_ADDRESS,
     abi: IUniswapV3PoolArtifact.abi,
     signerOrProvider: provider,
   });
   const routerContract = useContract({
-    address: routerAddress,
+    address: ROUTER_ADDRESS,
     abi: ISwapRouterArtifact.abi,
     signerOrProvider: signer,
   });
@@ -52,13 +52,13 @@ const useSwap = () => {
       throw new Error('Router contract has not been initialized');
 
     await deposit(amount);
-    await approve(routerAddress, amount);
+    await approve(ROUTER_ADDRESS, amount);
 
     const immutables = await getPoolImmutables();
 
     const parsedAmount = ethers.utils.parseUnits(
       amount.toString(),
-      UNIDecimals
+      UNI_DECIMALS
     );
 
     const params = {
@@ -85,8 +85,8 @@ const useSwap = () => {
       getPoolState(),
     ]);
 
-    const tokenA = new Token(chainId.goerli, immutables.token0, UNIDecimals);
-    const tokenB = new Token(chainId.goerli, immutables.token1, WETHDecimals);
+    const tokenA = new Token(chainId.goerli, immutables.token0, UNI_DECIMALS);
+    const tokenB = new Token(chainId.goerli, immutables.token1, WETH_DECIMALS);
 
     const pool = new Pool(
       tokenA,
