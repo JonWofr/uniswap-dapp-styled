@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAccount, useConnect } from 'wagmi';
+import { chainId, useAccount, useConnect } from 'wagmi';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import Button from './Button';
 import styles from './Header.module.css';
@@ -8,6 +8,7 @@ const Header = () => {
   const { address } = useAccount();
   const { connect } = useConnect({
     connector: new InjectedConnector(),
+    chainId: chainId.goerli,
   });
 
   return (
