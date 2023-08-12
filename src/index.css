@@ -1,13 +1,13 @@
 :root {
-  --accent-color-from: hsl(322, 100%, 50%);
-  --accent-color-to: hsl(259, 100%, 50%);
+  --accent-color-from:  #009a35;
+  --accent-color-to: #ffe400;
   --accent-color: linear-gradient(
     90deg,
     var(--accent-color-from),
     var(--accent-color-to)
   );
-  --primary-background-color: hsl(240, 6%, 6%);
-  --secondary-background-color: hsl(240, 6%, 16%);
+  --primary-background-color: rgba(0,73,61,255);
+  --secondary-background-color: rgba(255,255,255,255);
   --tertiary-background-color: hsl(240, 6%, 26%);
   --primary-font-color: hsl(0, 0%, 100%);
 }
@@ -19,7 +19,9 @@ body {
   font-family: sans-serif;
   color: var(--primary-font-color);
 }
-
+#heading {
+  color: #ffe400;
+  text-align: center;}
 p {
   margin: 0;
 }
