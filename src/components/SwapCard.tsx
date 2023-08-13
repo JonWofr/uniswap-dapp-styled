@@ -7,7 +7,7 @@ import { useAccount, useBalance } from 'wagmi';
 import Spinner from './Spinner';
 import Button from './Button';
 
-const UNI_ADDRESS = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';
+const UNI_ADDRESS = '0xb755506531786C8aC63B756BaB1ac387bACB0C04';
 
 const SwapCard = () => {
   const [amount, setAmount] = React.useState(0);
@@ -75,10 +75,10 @@ const SwapCard = () => {
             </div>
           </div>
           <p className={styles.balance}>Balance: {UNIBalance?.formatted}</p>
-        </div>
+        </div>        
         <Button disabled={address ? false : true} onClick={onClickSwapButton}>
           Swap
-        </Button>
+        </Button>     
       </div>
       {isLoading && <Spinner />}
     </>

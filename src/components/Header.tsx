@@ -13,13 +13,14 @@ const Header = () => {
 
   return (
     <header className={styles.header}>
-      {address ? (
-        <p>Connected to: {address}</p>
-      ) : (
-        <Button onClick={connect}>Connect wallet</Button>
-      )}
-    </header>
-  );
+    {address ? (
+      <p className={styles.connectBtn}>Connected to: {address.length > 10 ? `${address.slice(0, 10)}...` : address}</p>
+
+    ) : (
+      <Button onClick={connect}>Connect wallet</Button>
+    )}
+  </header>
+);
 };
 
 export default Header;

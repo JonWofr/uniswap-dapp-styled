@@ -19,6 +19,7 @@ const client = createClient({
 function App() {
   return (
     <WagmiConfig client={client}>
+       <h1 id='heading'>(Zarp)</h1>
       <Header />
       <SwapCard />
     </WagmiConfig>

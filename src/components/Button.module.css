@@ -2,7 +2,7 @@
   padding: 0.5rem 1rem;
   font-weight: bold;
   letter-spacing: 0.05em;
-  background-image: var(--accent-color);
+  background-color: var(--accent-color-to);
   border: none;
   border-radius: 0.25rem;
 }

@@ -1,6 +1,14 @@
 .header {
-  background-color: var(--secondary-background-color);
+  background-color: var(--primary-background-color);
   padding: 0.5rem 2rem;
   display: flex;
   justify-content: flex-end;
+}
+.connectBtn {
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  background-color: var(--accent-color-to);
+  border: none;
+  border-radius: 0.25rem;
 }
